@@ -266,3 +266,18 @@ public extension DiskStorage {
     return storage
   }
 }
+
+extension DiskStorage: AllEntriesRetriever {
+    public func entries() throws -> [Entry<T>] {
+        let paths = try fileManager.contentsOfDirectory(atPath: path)
+        return paths.compactMap({
+            do {
+                let filePath = NSString(string: path).appendingPathComponent($0)
+                return try entry(forKey: filePath)
+            } catch {
+                // This should never occur. Therefore, return nil
+                return nil
+            }
+        })
+    }
+}
